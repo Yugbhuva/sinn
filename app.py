@@ -19,6 +19,8 @@ db = client.url_shortener
 users_collection = db.users
 urls_collection = db.urls
 
+BASE_URL = 'https://sinn.onrender.com/'
+
 def generate_short_code():
     characters = string.ascii_letters + string.digits
     while True:
@@ -122,7 +124,7 @@ def create_short_url():
         "created_at": datetime.utcnow()
     })
 
-    short_url = request.host_url + short_code
+    short_url = BASE_URL.rstrip('/') + '/' + short_code
     return jsonify({'short_url': short_url, 'short_code': short_code})
 
 @app.route('/delete/<url_id>')

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - URL Shortener{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="url-creator">
+        <h2>Create Short URL</h2>
+        <form id="urlForm" class="url-form">
+            <div class="form-group">
+                <label for="originalUrl">Enter your long URL:</label>
+                <input type="url" id="originalUrl" name="url" placeholder="https://example.com/very/long/url" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Shorten URL</button>
+        </form>
+        
+        <div id="result" class="result-container" style="display: none;">
+            <h3>Your Short URL:</h3>
+            <div class="short-url-container">
+                <input type="text" id="shortUrl" readonly>
+                <button onclick="copyToClipboard()" class="btn btn-secondary">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="urls-section">
+        <h2>Your URLs</h2>
+        {% if urls %}
+            <div class="urls-grid">
+                {% for url in urls %}
+                <div class="url-card">
+                    <div class="url-info">
+                        <div class="original-url">
+                            <strong>Original:</strong> 
+                            <a href="{{ url.original_url }}" target="_blank">{{ url.original_url[:50] }}{% if url.original_url|length > 50 %}...{% endif %}</a>
+                        </div>
+                        <div class="short-url">
+                            <strong>Short:</strong> 
+                            <a href="{{ request.host_url }}{{ url.short_code }}" target="_blank">{{ request.host_url }}{{ url.short_code }}</a>
+                        </div>
+                        <div class="url-stats">
+                            <span class="clicks" style="color: white;">👆 {{ url.clicks }} clicks</span>
+                            <span class="date" style="color: white;">📅 {{ url.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                    </div>
+                    <div class="url-actions">
+                        <button onclick="copyToClipboard('{{ request.host_url }}{{ url.short_code }}')" class="btn btn-small">Copy</button>
+                        <a href="{{ url_for('delete_url', url_id=url._id) }}" class="btn btn-small btn-danger" onclick="return confirm('Are you sure you want to delete this URL?')">Delete</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>No URLs created yet</h3>
+                <p>Create your first short URL using the form above!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
